@@ -1,0 +1,23 @@
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
+task getUpdateChecker(type: Exec) {
+	def updateChecker = "${buildDir}/plugin-update-checker";
+	def str = "mkdir -p '" + file(updateChecker).absolutePath + "' && wget -qO- 'https://github.com/YahnisElsts/plugin-update-checker/archive/v4.4.tar.gz' | tar xvz --strip 1 -C '" + file(updateChecker).absolutePath + "'";
+	commandLine 'bash', '-c', str
+	outputs.dir updateChecker
+}
+
+task dist(type: Zip, dependsOn: 'getUpdateChecker') {
+	archiveName = 'opcache-mo-file.zip'
+
+	from(file('.')) {
+		include 'readme.txt'
+		include 'opcache-mo-file.php'
+		include 'opcache-mo-file-mu.php'
+	}
+	from(file("${buildDir}/plugin-update-checker")) {
+		into('plugin-update-checker')
+	}
+}
